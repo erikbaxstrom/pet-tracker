@@ -82,7 +82,6 @@ describe('user routes', () => {
       .post('/api/v1/users/sessions')
       .send({ email: 'admin', password: '1234' });
 
-    // const [agent] = await registerAndLogin({ email: 'admin' });
     const res = await agent.get('/api/v1/users/');
     expect(res.status).toEqual(200);
   });

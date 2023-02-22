@@ -76,7 +76,18 @@ describe('pets routes', () => {
     await agent.post('/api/v1/pets').send(newPet);
     const resp = await agent.get('/api/v1/pets');
     expect(resp.status).toBe(200);
-    expect(resp.body).toMatchInlineSnapshot(`Array []`);
+    expect(resp.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "breed": "Cat",
+          "emergency_contact": "477-444-3333",
+          "id": "1",
+          "name": "Sandy",
+          "notes": "Allergic to peanuts",
+          "vet": "Mad Paws",
+        },
+      ]
+    `);
   });
 
   // it('GET /api/v1/pets should return a list of pets owned by current user', async () => {

@@ -89,29 +89,4 @@ describe('pets routes', () => {
       ]
     `);
   });
-
-  // it('GET /api/v1/pets should return a list of pets owned by current user', async () => {
-  //   const [agent] = await registerAndLogin();
-  //   const user1Pet = await Pet.insert({
-  //     name: 'Beef',
-  //     breed: 'Cat',
-  //     emergency_contact: '206-444-3333',
-  //     vet: 'Sad Paws',
-  //     notes: 'Allergic to bananas',
-  //   });
-  //   await Pet.insert({
-  //     name: 'Sandy',
-  //     breed: 'Cat',
-  //     emergency_contact: '477-444-3333',
-  //     vet: 'Mad Paws',
-  //     notes: 'Allergic to peanuts',
-  //   });
-  //   const resp = await agent.get('/api/v1/pets');
-  //   expect(resp.status).toBe(200);
-  //   expect(resp.body.length).toBe(1);
-  //   expect(resp.body[0]).toEqual({
-  //     ...user1Pet,
-  //     id: expect.any(String),
-  //   });
-  // });
 });

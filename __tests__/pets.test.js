@@ -89,4 +89,29 @@ describe('pets routes', () => {
       ]
     `);
   });
+
+  it('GET /api/v1/pets/:id should return an individual pet', async () => {
+    const [agent] = await registerAndLogin();
+    const newPet = {
+      name: 'Bob',
+      breed: 'Cat',
+      emergency_contact: '477-444-3333',
+      vet: 'Dad Paws',
+      notes: 'Allergic to peanuts',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+
+    const resp = await agent.get('/api/v1/pets/1');
+    expect(resp.status).toBe(200);
+    expect(resp.body).toMatchInlineSnapshot(`
+      Object {
+        "breed": "Cat",
+        "emergency_contact": "477-444-3333",
+        "id": "1",
+        "name": "Bob",
+        "notes": "Allergic to peanuts",
+        "vet": "Dad Paws",
+      }
+    `);
+  });
 });

@@ -114,4 +114,37 @@ describe('pets routes', () => {
       }
     `);
   });
+
+  it('PUT /api/v1/pets/:id should allow users to update a pet if they are the owner', async () => {
+    const [agent] = await registerAndLogin();
+    const newPet = {
+      name: 'Tilly',
+      breed: 'Dog',
+      emergency_contact: '477-555-3333',
+      vet: 'Dad Paws',
+      notes: 'Allergic to peanuts',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+
+    const resp = await agent
+      .put('/api/v1/pets/1')
+      .send({
+        name: 'Tilly',
+        breed: 'Dog',
+        emergency_contact: '477-555-3333',
+        vet: 'Daddy paws',
+        notes: 'Allergic to peanuts',
+      });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({
+      ...newPet,
+      name: expect.any(String),
+      breed: expect.any(String),
+      emergency_contact: expect.any(String),
+      vet: 'Daddy Paws',
+      notes: expect.any(String),
+    });
+  });
 });

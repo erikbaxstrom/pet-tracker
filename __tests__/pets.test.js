@@ -128,18 +128,16 @@ describe('pets routes', () => {
     const resp1 = await agent.get('/api/v1/pets/1');
     expect(resp1.body.id).toBe('1');
 
-    const resp = await agent
-      .put('/api/v1/pets/1')
-      .send({
-        name: 'Tilly',
-        breed: 'Dog',
-        emergency_contact: '477-555-3333',
-        vet: 'Daddy paws',
-        notes: 'Allergic to peanuts',
-      });
+    const resp = await agent.put('/api/v1/pets/1').send({
+      name: 'Tilly',
+      breed: 'Dog',
+      emergency_contact: '477-555-3333',
+      vet: 'Daddy Paws',
+      notes: 'Allergic to peanuts',
+    });
     expect(resp.status).toBe(200);
     expect(resp.body).toEqual({
-      ...newPet,
+      id: '1',
       name: expect.any(String),
       breed: expect.any(String),
       emergency_contact: expect.any(String),

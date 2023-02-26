@@ -89,4 +89,60 @@ describe('pets routes', () => {
       ]
     `);
   });
+
+  it('GET /api/v1/pets/:id should return an individual pet', async () => {
+    const [agent] = await registerAndLogin();
+    const newPet = {
+      name: 'Bob',
+      breed: 'Cat',
+      emergency_contact: '477-444-3333',
+      vet: 'Dad Paws',
+      notes: 'Allergic to peanuts',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+
+    const resp = await agent.get('/api/v1/pets/1');
+    expect(resp.status).toBe(200);
+    expect(resp.body).toMatchInlineSnapshot(`
+      Object {
+        "breed": "Cat",
+        "emergency_contact": "477-444-3333",
+        "id": "1",
+        "name": "Bob",
+        "notes": "Allergic to peanuts",
+        "vet": "Dad Paws",
+      }
+    `);
+  });
+
+  it('PUT /api/v1/pets/:id should allow users to update a pet if they are the owner', async () => {
+    const [agent] = await registerAndLogin();
+    const newPet = {
+      name: 'Tilly',
+      breed: 'Dog',
+      emergency_contact: '477-555-3333',
+      vet: 'Dad Paws',
+      notes: 'Allergic to peanuts',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+
+    const resp = await agent.put('/api/v1/pets/1').send({
+      name: 'Tilly',
+      breed: 'Dog',
+      emergency_contact: '477-555-3333',
+      vet: 'Daddy Paws',
+      notes: 'Allergic to peanuts',
+    });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({
+      id: '1',
+      name: expect.any(String),
+      breed: expect.any(String),
+      emergency_contact: expect.any(String),
+      vet: 'Daddy Paws',
+      notes: expect.any(String),
+    });
+  });
 });

@@ -145,4 +145,31 @@ describe('pets routes', () => {
       notes: expect.any(String),
     });
   });
+
+  it('POST /api/v1/pets/:id/owners/ should add an owner to a pet', async () => {
+    const [agent] = await registerAndLogin();
+    const newPet = {
+      name: 'Willy',
+      breed: 'Dog',
+      emergency_contact: '477-555-3333',
+      vet: 'Four Paws',
+      notes: 'Loves his rubber ducky',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+    // create user new@email.com
+    const newUser = {
+      email: 'new@email.com',
+      password: '12345',
+    };
+    await registerAndLogin(newUser);
+
+    // call the route
+    const resp = await agent
+      .post('/api/v1/pets/1/owners/new@email.com')
+      .send({ email: 'new@email.com' });
+    // expect response to be???
+    expect(resp.status).toBe(200);
+  });
 });

@@ -169,7 +169,10 @@ describe('pets routes', () => {
     const resp = await agent
       .post('/api/v1/pets/1/owners/')
       .send({ email: 'new@email.com' });
-    // expect response to be???
     expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({
+      id: '2',
+      email: 'new@email.com',
+    });
   });
 });

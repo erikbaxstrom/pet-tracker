@@ -167,7 +167,7 @@ describe('pets routes', () => {
 
     // call the route
     const resp = await agent
-      .post('/api/v1/pets/1/owners/new@email.com')
+      .post('/api/v1/pets/1/owners/')
       .send({ email: 'new@email.com' });
     // expect response to be???
     expect(resp.status).toBe(200);

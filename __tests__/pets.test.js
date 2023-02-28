@@ -173,4 +173,37 @@ describe('pets routes', () => {
       email: 'new@email.com',
     });
   });
+
+  it('GET /api/v1/pets/:id/owners/ should return a list of owners for that pet, excluding the user who submitted the request', async () => {
+    // make user
+    const [agent] = await registerAndLogin();
+    //make pet
+    const newPet = {
+      name: 'Billy',
+      breed: 'Cat',
+      emergency_contact: '477-555-3333',
+      vet: 'Nine Lives',
+      notes: 'Loves cheese',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+    // add user to pet
+    // create user new@email.com
+    const newUser = {
+      email: 'new@email.com',
+      password: '12345',
+    };
+    await registerAndLogin(newUser);
+
+    // call the route
+    const resp = await agent
+      .post('/api/v1/pets/1/owners/')
+      .send({ email: 'new@email.com' });
+    expect(resp.status).toBe(200);
+    // call get. should return added user
+    const getResp = await agent.get('/api/vi/pets/1/owners/');
+    expect(getResp.status).toBe(200);
+    expect(getResp.body).toMatchInlineSnapshot();
+  });
 });

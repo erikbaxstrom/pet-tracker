@@ -202,6 +202,13 @@ describe('pets routes', () => {
     // call get. should return added user
     const getResp = await agent.get('/api/v1/pets/1/owners');
     expect(getResp.status).toBe(200);
-    expect(getResp.body).toMatchInlineSnapshot();
+    expect(getResp.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "email": "new@email.com",
+          "user_id": "2",
+        },
+      ]
+    `);
   });
 });

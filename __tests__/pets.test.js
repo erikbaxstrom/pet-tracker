@@ -242,7 +242,10 @@ describe('pets routes', () => {
     // call delete
     const deleteResp = await agent
       .delete('/api/v1/pets/1/owners')
-      .send({ id: '2' });
+      .send({ user_id: '2' });
     expect(deleteResp.status).toBe(204);
+    // get to ensure it has been deleted
+    const getResp2 = await agent.get('/api/v1/pets/1/owners');
+    expect(getResp2.body).toEqual([]);
   });
 });

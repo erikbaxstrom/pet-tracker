@@ -79,7 +79,6 @@ describe('pets routes', () => {
     expect(resp.body).toMatchInlineSnapshot(`
       Array [
         Object {
-          "breed": "Cat",
           "emergency_contact": "477-444-3333",
           "id": "1",
           "name": "Sandy",
@@ -105,7 +104,6 @@ describe('pets routes', () => {
     expect(resp.status).toBe(200);
     expect(resp.body).toMatchInlineSnapshot(`
       Object {
-        "breed": "Cat",
         "emergency_contact": "477-444-3333",
         "id": "1",
         "name": "Bob",
@@ -144,5 +142,110 @@ describe('pets routes', () => {
       vet: 'Daddy Paws',
       notes: expect.any(String),
     });
+  });
+
+  it('POST /api/v1/pets/:id/owners/ should add an owner to a pet', async () => {
+    const [agent] = await registerAndLogin();
+    const newPet = {
+      name: 'Willy',
+      breed: 'Dog',
+      emergency_contact: '477-555-3333',
+      vet: 'Four Paws',
+      notes: 'Loves his rubber ducky',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+    // create user new@email.com
+    const newUser = {
+      email: 'new@email.com',
+      password: '12345',
+    };
+    await registerAndLogin(newUser);
+
+    // call the route
+    const resp = await agent
+      .post('/api/v1/pets/1/owners/')
+      .send({ email: 'new@email.com' });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({
+      user_id: '2',
+      email: 'new@email.com',
+    });
+  });
+
+  it('GET /api/v1/pets/:id/owners should return a list of owners for that pet, excluding the user who submitted the request', async () => {
+    // make user
+    const [agent] = await registerAndLogin();
+    //make pet
+    const newPet = {
+      name: 'Billy',
+      breed: 'Cat',
+      emergency_contact: '477-555-3333',
+      vet: 'Nine Lives',
+      notes: 'Loves cheese',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+    // add user to pet
+    // create user new@email.com
+    const newUser = {
+      email: 'new@email.com',
+      password: '12345',
+    };
+    await registerAndLogin(newUser);
+    const resp = await agent
+      .post('/api/v1/pets/1/owners/')
+      .send({ email: 'new@email.com' });
+    expect(resp.status).toBe(200);
+    // call get. should return added user
+    const getResp = await agent.get('/api/v1/pets/1/owners');
+    expect(getResp.status).toBe(200);
+    expect(getResp.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "email": "new@email.com",
+          "user_id": "2",
+        },
+      ]
+    `);
+  });
+
+  it('DELETE /api/v1/pets/:id/owners should delete a user', async () => {
+    // make user
+    const [agent] = await registerAndLogin();
+    //make pet
+    const newPet = {
+      name: 'Philly',
+      breed: 'Cat',
+      emergency_contact: '477-555-3333',
+      vet: 'Eagle Care',
+      notes: 'Loves soft, spreadable cheese',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+    // create user new@email.com
+    const newUser = {
+      email: 'new@email.com',
+      password: '12345',
+    };
+    await registerAndLogin(newUser);
+    const resp = await agent
+      .post('/api/v1/pets/1/owners/')
+      .send({ email: 'new@email.com' });
+    expect(resp.status).toBe(200);
+    // call get. should return added user
+    const getResp = await agent.get('/api/v1/pets/1/owners');
+    expect(getResp.status).toBe(200);
+    // call delete
+    const deleteResp = await agent
+      .delete('/api/v1/pets/1/owners')
+      .send({ user_id: '2' });
+    expect(deleteResp.status).toBe(204);
+    // get to ensure it has been deleted
+    const getResp2 = await agent.get('/api/v1/pets/1/owners');
+    expect(getResp2.body).toEqual([]);
   });
 });

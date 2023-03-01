@@ -211,4 +211,38 @@ describe('pets routes', () => {
       ]
     `);
   });
+
+  it('DELETE /api/v1/pets/:id/owners should delete a user', async () => {
+    // make user
+    const [agent] = await registerAndLogin();
+    //make pet
+    const newPet = {
+      name: 'Philly',
+      breed: 'Cat',
+      emergency_contact: '477-555-3333',
+      vet: 'Eagle Care',
+      notes: 'Loves soft, spreadable cheese',
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    const resp1 = await agent.get('/api/v1/pets/1');
+    expect(resp1.body.id).toBe('1');
+    // create user new@email.com
+    const newUser = {
+      email: 'new@email.com',
+      password: '12345',
+    };
+    await registerAndLogin(newUser);
+    const resp = await agent
+      .post('/api/v1/pets/1/owners/')
+      .send({ email: 'new@email.com' });
+    expect(resp.status).toBe(200);
+    // call get. should return added user
+    const getResp = await agent.get('/api/v1/pets/1/owners');
+    expect(getResp.status).toBe(200);
+    // call delete
+    const deleteResp = await agent
+      .delete('/api/v1/pets/1/owners')
+      .send({ id: '2' });
+    expect(deleteResp.status).toBe(204);
+  });
 });

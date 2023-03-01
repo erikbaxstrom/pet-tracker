@@ -169,7 +169,7 @@ describe('pets routes', () => {
       .send({ email: 'new@email.com' });
     expect(resp.status).toBe(200);
     expect(resp.body).toEqual({
-      id: '2',
+      user_id: '2',
       email: 'new@email.com',
     });
   });

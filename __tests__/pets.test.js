@@ -79,6 +79,7 @@ describe('pets routes', () => {
     expect(resp.body).toMatchInlineSnapshot(`
       Array [
         Object {
+          "breed": "Cat",
           "emergency_contact": "477-444-3333",
           "id": "1",
           "name": "Sandy",
@@ -104,6 +105,7 @@ describe('pets routes', () => {
     expect(resp.status).toBe(200);
     expect(resp.body).toMatchInlineSnapshot(`
       Object {
+        "breed": "Cat",
         "emergency_contact": "477-444-3333",
         "id": "1",
         "name": "Bob",

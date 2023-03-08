@@ -51,6 +51,7 @@ describe('tasks routes', () => {
       time: '6:00pm',
       note: 'good soup',
       is_complete: false,
+      pet_id: newPet.id,
     };
     await agent.post('/api/v1/pets').send(newPet);
     const resp = await agent.get('/api/v1/pets/1');
@@ -64,6 +65,84 @@ describe('tasks routes', () => {
       time: expect.any(String),
       note: expect.any(String),
       is_complete: expect.any(Boolean),
+      pet_id: expect.any(String),
     });
+  });
+
+  it('GET /api/v1/tasks/:id should return a list of tasks specific to a pet', async () => {
+    const [agent] = await registerAndLogin();
+    // define new pet
+    const newPet = {
+      name: 'DeBalto',
+      breed: 'Dog',
+      emergency_contact: '206-222-3333',
+      vet: 'Colder Paws',
+      notes: 'Allergic to sweet pasta',
+    };
+    // post to the route w/ new pet
+
+    const task = {
+      description: 'feed dogs',
+      time: '6:00pm',
+      note: 'bad soup',
+      is_complete: false,
+      pet_id: newPet.id,
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    await agent.get('/api/v1/pets/1');
+    await agent.post('/api/v1/pets/1/tasks').send(task);
+
+    const resp3 = await agent.get('/api/v1/tasks/1');
+    expect(resp3.status).toBe(200);
+    expect(resp3.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "description": "feed dogs",
+          "id": "1",
+          "is_complete": false,
+          "note": "bad soup",
+          "pet_id": "1",
+          "time": "6:00pm",
+        },
+      ]
+    `);
+  });
+
+  it.only('GET /api/v1/tasks/:id should return a list all tasks associated with a user', async () => {
+    const [agent] = await registerAndLogin();
+    // define new pet
+    const newPet = {
+      name: 'DeBalto',
+      breed: 'Dog',
+      emergency_contact: '206-222-3333',
+      vet: 'Colder Paws',
+      notes: 'Allergic to sweet pasta',
+    };
+    // post to the route w/ new pet
+
+    const task = {
+      description: 'feed dogs',
+      time: '6:00pm',
+      note: 'bad soup',
+      is_complete: false,
+      pet_id: newPet.id,
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    await agent.get('/api/v1/pets/1');
+    await agent.post('/api/v1/pets/1/tasks').send(task);
+    const resp = await agent.get('/api/v1/tasks');
+    expect(resp.status).toBe(200);
+    expect(resp.body).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "description": "feed dogs",
+          "id": "1",
+          "is_complete": false,
+          "note": "bad soup",
+          "pet_id": "1",
+          "time": "6:00pm",
+        },
+      ]
+    `);
   });
 });

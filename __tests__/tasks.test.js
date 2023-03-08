@@ -57,7 +57,7 @@ describe('tasks routes', () => {
     const resp = await agent.get('/api/v1/pets/1');
     expect(resp.status).toBe(200);
 
-    const resp2 = await agent.post('/api/v1/pets/1/tasks').send(task);
+    const resp2 = await agent.post('/api/v1/tasks/1').send(task);
     expect(resp2.status).toBe(200);
     expect(resp2.body).toEqual({
       id: expect.any(String),
@@ -90,7 +90,7 @@ describe('tasks routes', () => {
     };
     await agent.post('/api/v1/pets').send(newPet);
     await agent.get('/api/v1/pets/1');
-    await agent.post('/api/v1/pets/1/tasks').send(task);
+    await agent.post('/api/v1/tasks/1').send(task);
 
     const resp3 = await agent.get('/api/v1/tasks/1');
     expect(resp3.status).toBe(200);
@@ -129,7 +129,7 @@ describe('tasks routes', () => {
     };
     await agent.post('/api/v1/pets').send(newPet);
     await agent.get('/api/v1/pets/1');
-    await agent.post('/api/v1/pets/1/tasks').send(task);
+    await agent.post('/api/v1/tasks/1').send(task);
     const resp = await agent.get('/api/v1/tasks');
     expect(resp.status).toBe(200);
     expect(resp.body).toMatchInlineSnapshot(`

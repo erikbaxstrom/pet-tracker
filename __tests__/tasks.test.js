@@ -69,6 +69,42 @@ describe('tasks routes', () => {
     });
   });
 
+  it('GET /api/v1/tasks/:id should return an individual task', async () => {
+    const [agent] = await registerAndLogin();
+    // define new pet
+    const newPet = {
+      name: 'Brunksoop',
+      breed: 'Dog',
+      emergency_contact: '206-332-3333',
+      vet: 'Pizza Paws',
+      notes: 'hates to salty pasta',
+    };
+    // post to the route w/ new pet
+
+    const task = {
+      description: 'feed pup',
+      time: '8:00pm',
+      note: '*chefs kiss* soup',
+      is_complete: false,
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    await agent.get('/api/v1/pets/1');
+    await agent.post('/api/v1/tasks/pet/1').send(task);
+
+    const resp = await agent.get('/api/v1/tasks/1');
+    expect(resp.status).toBe(200);
+    expect(resp.body).toMatchInlineSnapshot(`
+      Object {
+        "description": "feed pup",
+        "id": "1",
+        "is_complete": false,
+        "note": "*chefs kiss* soup",
+        "pet_id": "1",
+        "time": "8:00pm",
+      }
+    `);
+  });
+
   it('GET /api/v1/tasks/pet/:id should return a list of tasks specific to a pet', async () => {
     const [agent] = await registerAndLogin();
     // define new pet
@@ -177,5 +213,34 @@ describe('tasks routes', () => {
       pet_id: expect.any(String),
       is_complete: true,
     });
+  });
+
+  it('DELETE /api/v1/tasks/:id should delete an existing task for authenticated users', async () => {
+    const [agent] = await registerAndLogin();
+    // define new pet
+    const newPet = {
+      name: 'DeBrunksi',
+      breed: 'Dog',
+      emergency_contact: '206-332-3333',
+      vet: 'Pizza Paws',
+      notes: 'loves to salty pasta',
+    };
+    // post to the route w/ new pet
+
+    const task = {
+      description: 'feed pup',
+      time: '8:00pm',
+      note: '*chefs kiss* soup',
+      is_complete: false,
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    await agent.get('/api/v1/pets/1');
+    await agent.post('/api/v1/tasks/pet/1').send(task);
+
+    const resp = await agent.delete('/api/v1/tasks/1');
+    expect(resp.status).toBe(200);
+
+    const newResp = await agent.get('/api/v1/tasks/1');
+    expect(newResp.status).toBe(404);
   });
 });

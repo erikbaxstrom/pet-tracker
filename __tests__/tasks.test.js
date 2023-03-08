@@ -140,6 +140,7 @@ describe('tasks routes', () => {
           "is_complete": false,
           "note": "bad soup",
           "pet_id": "1",
+          "pet_name": "DeBalto",
           "time": "6:00pm",
         },
       ]

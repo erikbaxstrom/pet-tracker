@@ -57,7 +57,7 @@ describe('tasks routes', () => {
     const resp = await agent.get('/api/v1/pets/1');
     expect(resp.status).toBe(200);
 
-    const resp2 = await agent.post('/api/v1/tasks/1').send(task);
+    const resp2 = await agent.post('/api/v1/tasks/pet/1').send(task);
     expect(resp2.status).toBe(200);
     expect(resp2.body).toEqual({
       id: expect.any(String),
@@ -69,7 +69,7 @@ describe('tasks routes', () => {
     });
   });
 
-  it('GET /api/v1/tasks/:id should return a list of tasks specific to a pet', async () => {
+  it('GET /api/v1/tasks/pet/:id should return a list of tasks specific to a pet', async () => {
     const [agent] = await registerAndLogin();
     // define new pet
     const newPet = {
@@ -90,9 +90,9 @@ describe('tasks routes', () => {
     };
     await agent.post('/api/v1/pets').send(newPet);
     await agent.get('/api/v1/pets/1');
-    await agent.post('/api/v1/tasks/1').send(task);
+    await agent.post('/api/v1/tasks/pet/1').send(task);
 
-    const resp3 = await agent.get('/api/v1/tasks/1');
+    const resp3 = await agent.get('/api/v1/tasks/pet/1');
     expect(resp3.status).toBe(200);
     expect(resp3.body).toMatchInlineSnapshot(`
       Array [
@@ -102,13 +102,14 @@ describe('tasks routes', () => {
           "is_complete": false,
           "note": "bad soup",
           "pet_id": "1",
+          "pet_name": "DeBalto",
           "time": "6:00pm",
         },
       ]
     `);
   });
 
-  it.only('GET /api/v1/tasks/:id should return a list all tasks associated with a user', async () => {
+  it('GET /api/v1/tasks should return a list of tasks associated with a user', async () => {
     const [agent] = await registerAndLogin();
     // define new pet
     const newPet = {
@@ -129,7 +130,7 @@ describe('tasks routes', () => {
     };
     await agent.post('/api/v1/pets').send(newPet);
     await agent.get('/api/v1/pets/1');
-    await agent.post('/api/v1/tasks/1').send(task);
+    await agent.post('/api/v1/tasks/pet/1').send(task);
     const resp = await agent.get('/api/v1/tasks');
     expect(resp.status).toBe(200);
     expect(resp.body).toMatchInlineSnapshot(`
@@ -145,5 +146,36 @@ describe('tasks routes', () => {
         },
       ]
     `);
+  });
+
+  it('PUT /api/v1/tasks/:id should update an existing task to complete', async () => {
+    const [agent] = await registerAndLogin();
+    // define new pet
+    const newPet = {
+      name: 'DeBralto',
+      breed: 'Dog',
+      emergency_contact: '206-332-3333',
+      vet: 'Colder Paws',
+      notes: 'Allergic to sour pasta',
+    };
+    // post to the route w/ new pet
+
+    const task = {
+      description: 'feed pup',
+      time: '8:00pm',
+      note: 'mid soup',
+      is_complete: false,
+    };
+    await agent.post('/api/v1/pets').send(newPet);
+    await agent.get('/api/v1/pets/1');
+    await agent.post('/api/v1/tasks/pet/1').send(task);
+    const resp = await agent.put('/api/v1/tasks/1').send({ is_complete: true });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({
+      ...task,
+      id: expect.any(String),
+      pet_id: expect.any(String),
+      is_complete: true,
+    });
   });
 });

@@ -1,6 +1,6 @@
 # PETAGENDA
 
-![PETAGENDAlogo](./public/petagenda-logo-v1.png)
+![PETAGENDAlogo](https://github.com/erikbaxstrom/pet-tracker-frontend/blob/main/public/petagenda-logo-v1.png)
 
 # What is PETAGENDA?
 
